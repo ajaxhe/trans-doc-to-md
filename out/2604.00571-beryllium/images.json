@@ -1,0 +1,86 @@
+[
+  {
+    "index": 0,
+    "page": 0,
+    "asset_link": "/assets/39e6838a37e346ad9ddf2cceda0e04d9",
+    "asset_id": "39e6838a37e346ad9ddf2cceda0e04d9",
+    "title": "手持式光谱仪工作原理及石墨烯层结构示意图",
+    "desc": "该图像是一幅手绘风格的科技示意图。左侧主体是一个类似手电筒的手持设备，从其前端圆形发光口处，发出大量向外扩散的波浪状线条（代表光线或能量束）以及一些小点（可能代表粒子或散射光）。设备的筒身有细节刻画，如环形纹理和一个侧面的小支架或开关。从设备前端引出一条粗大的箭头，指向右下方的一个圆形放大区域。该放大区域以剖面图的形式展示了材料的结构：最上层是密集的六边形网格结构，由许多小的白色圆圈（代表原子）和连接它们的黑色细线（代表化学键）组成，这典型地表示石墨烯或类似的二维材料。六边形网格下方是几层不同的结构：中间一层较为稀疏，也包含一些小圆圈；最底层则是由斜线填充的区域，表示基底或另一种材料。在放大区域的右侧边缘，可以看到'Ex'和'Em'的缩写，分别代表激发（Excitation）和发射（Emission），暗示了光谱分析的过程。整个图像的背景为浅米色，带有素描般的笔触感。结合其具体内容和潜在的上下文功能，这张图片旨在直观地说明手持式光谱分析设备如何通过发射能量束与材料（如石墨烯）相互作用，并可能通过分析其激发和发射特性来获取材料的微观结构信息。",
+    "context": "# Table of Contents Graphic: An interstellar probe encounters the ISM at 0.12c. ",
+    "downloaded": true,
+    "local_path": "images/img_000.png",
+    "error": ""
+  },
+  {
+    "index": 1,
+    "page": 2,
+    "asset_link": "/assets/d62f83235ae44b49ae204a95ba31a07a",
+    "asset_id": "d62f83235ae44b49ae204a95ba31a07a",
+    "title": "不同材料的Voigt体模量对比柱状图",
+    "desc": "该图片是一张水平柱状图，展示了多种材料的Voigt体模量Kv值（单位：GPa）。横轴表示Voigt体模量Kv的数值范围，从0到400 GPa，刻度间隔为100 GPa。纵轴列出了19种材料名称，从上到下依次为：Diamond, c-BN, WC, TaC, W, Graphite, TiB2, HfC, h-BN, ZrB2, B4C, SiC, Fe, Be, Ti, WS2, MoS2, Al, WSe2, MoSe2。柱状图的颜色编码位于图表右下角图例：蓝色代表Metals（金属），绿色代表2D / Layered（二维/层状材料），橙色代表Ceramics（陶瓷）。",
+    "context": "# FIG. 1. Voigt bulk modulus $K_V$ of 20 candidate shielding materials (JARVIS-D",
+    "downloaded": true,
+    "local_path": "images/img_001.png",
+    "error": ""
+  },
+  {
+    "index": 2,
+    "page": 3,
+    "asset_link": "/assets/652c0d9d581e4efd9c2820ba503c0034",
+    "asset_id": "652c0d9d581e4efd9c2820ba503c0034",
+    "title": "不同材料比模量对比条形图",
+    "desc": "该图表为横向条形图，用于比较多种材料的比模量 (Specific modulus Kv/ρ)。Y轴列出材料名称，从上到下依次为：Diamond (金刚石)、Graphite (石墨)、c-BN (立方氮化硼)、h-BN (六方氮化硼)、B4C (碳化硼)、SiC (碳化硅)、Be (铍)、TiB2 (二硼化钛)、ZrB2 (二硼化锆)、Al (铝)、Fe (铁)、Ti (钛)、TaC (碳化钽)、WC (碳化钨)、HfC (碳化铪)、W (钨)、MoS2 (二硫化钼)、WS2 (二硫化钨)、MoSe2 (二硒化钼)、WSe2 (二硒化钨)。X轴表示比模量，单位为 GPa·cm³·g⁻¹，刻度从0到120，每20为一个间隔。图中包含三种颜色的条形，分别代表不同类别的材料：蓝色代表 Metals (金属)，绿色代表 2D / Layered (二维/层状材料)，橙色代表 Ceramics (陶瓷)。每种材料对应一个水平条形，其长度表示该材料的比模量数值。图例中明确了颜色与材料类别的对应关系。图中还含有一条垂直的虚线，位于X轴刻度60和80之间，目测约在68左右的位置。具体数据来看：金刚石 (橙色) 的比模量最高，超过120；石墨 (绿色) 紧随其后，略低于120；立方氮化硼 (橙色) 约为108；六方氮化硼 (绿色) 约为105；碳化硼 (橙色) 约为92；碳化硅 (橙色) 约为68，其末端与垂直虚线对齐；铍 (蓝色) 约为65；二硼化钛 (橙色) 约为55；二硼化锆 (橙色) 约为38；铝 (蓝色) 约为22；铁 (蓝色) 约为20；钛 (蓝色) 约为18；碳化钽 (橙色) 约为16；碳化钨 (橙色) 约为14；碳化铪 (橙色) 约为12；钨 (蓝色) 约为10；二硫化钼 (绿色) 约为6；二硫化钨 (绿色) 约为3；二硒化钼 (绿色) 约为2.5；二硒化钨 (绿色) 约为1.5。该图表通过条形图的形式，清晰、直观地对比了包括金属、陶瓷、二维/层状材料在内的多种材料的比模量 (Kv/ρ)。其核心目的是帮助读者快速评估不同材料在比模量这一性能指标上的相对优劣，识别出高性能材料（如金刚石、石墨）和低性能材料（如某些二维材料），并为材料选择提供数据支持。垂直虚线的引入可能暗示了一个特定的比较基准或性能门槛。",
+    "context": "# FIG. 2. Specific modulus $K_V/\\rho$, the key mass-efficiency metric. Dashed li",
+    "downloaded": true,
+    "local_path": "images/img_002.png",
+    "error": ""
+  },
+  {
+    "index": 3,
+    "page": 3,
+    "asset_link": "/assets/d866cdc9a82e4eca87808b9574f25acd",
+    "asset_id": "d866cdc9a82e4eca87808b9574f25acd",
+    "title": "不同材料侵蚀调整后屏蔽质量的横向条形图",
+    "desc": "该图为一张横向条形图，用于比较不同材料的侵蚀调整后屏蔽质量。图表的横轴表示“Erosion-adjusted shield mass (metric tons)”（侵蚀调整后屏蔽质量，单位为公吨），刻度范围从0到35，主要刻度标记为0, 5, 10, 15, 20, 25, 30, 35。纵轴列出了18种不同的材料名称，从上到下依次为：WC, W, TaC, Fe, WSe₂, HfC, MoSe₂, WS₂, MoS₂, Ti, ZrB₂, Al, TiB₂, c-BN, Be, SiC, Diamond, h-BN, B₄C, Graphite。每种材料对应一个水平条形。条形的长度表示其侵蚀调整后屏蔽质量。颜色表示“Thermal neutron σₙ (barns)”（热中子截面，单位为靶恩），右侧有一个垂直的颜色条作为图例，颜色从深红色（代表高值，约10⁻¹ barns）渐变到浅黄色（代表低值，约10⁻⁵ barns）。大部分条形的末端带有一个小方块标记，其颜色与条形颜色一致，对应热中子截面的数值。图中有一条垂直的虚线，旁边标注“Be baseline”（铍基线），该虚线位于横轴刻度7和8之间。大部分材料（如WC, W, TaC, Fe, WSe₂, HfC, MoSe₂, WS₂, MoS₂）的条形长度较长，屏蔽质量在10吨以上，其中WC最长，接近32.5吨。Ti, ZrB₂, Al, TiB₂, c-BN的屏蔽质量在7到16吨之间。Be, SiC, Diamond, h-BN, B₄C, Graphite的屏蔽质量较短，均在6吨以下。颜色方面，Fe, WSe₂, MoSe₂的条形呈现较深的红色，表明其热中子截面较高；WC, W, TaC, HfC, WS₂, MoS₂, Ti, Al, TiB₂, c-BN, Be, SiC, Diamond, h-BN, B₄C, Graphite的颜色则相对较浅，偏向黄色或橙色。该图表旨在直观比较18种不同材料的侵蚀调整后屏蔽质量和热中子截面，以帮助评估和选择适用于特定屏蔽应用的材料，其中WC表现出最高的屏蔽质量，而不同材料的热中子吸收能力通过颜色编码加以区分，并以铍（Be）的性能作为基线参考。",
+    "context": "# FIG. 3. Erosion-adjusted shield mass for a 5.9 ly mission at 0.12c. Bar color ",
+    "downloaded": true,
+    "local_path": "images/img_003.png",
+    "error": ""
+  },
+  {
+    "index": 4,
+    "page": 3,
+    "asset_link": "/assets/309850e52e5a4fc4a8fd02eadbf825a1",
+    "asset_id": "309850e52e5a4fc4a8fd02eadbf825a1",
+    "title": "材料的热中子吸收截面与比模量关系散点图",
+    "desc": "这是一张二维散点图。横轴表示比模量Kv/ρ，单位是GPa·cm³·g⁻¹，采用对数刻度，范围从0到140。纵轴表示热中子吸收截面σa，单位是barns per atom（每个原子的靶恩），也采用对数刻度，范围从10⁻²到10⁴。图中包含多个数据点，每个点代表一种材料，并用不同的颜色和形状进行区分。根据图例，蓝色圆形代表金属，青绿色圆形代表2D层状材料，橙色圆形代表陶瓷，黑色星形代表基准线。此外，在图的右下角有石墨（Graphite）和金刚石（Diamond）两个标记点。图上标注了多种材料的缩写，包括：WSe₂, WS₂, MoS₂, Mo₂C, ZrB₂, Nb, TaC, HfC, Ti, TAC, Fe, SiC, TaB₂, B₄C, p-BN, Be (hexagonal), 以及一个黑色星形标记的基准线（Benchmark line）。右上角标注了'Plot size = δ_cu'。该图直观地展示了多种材料在热中子吸收能力和比模量方面的性能分布，旨在帮助读者快速识别和比较不同类别材料的特性，从而为特定应用（尤其是涉及中子与材料相互作用的领域）选择合适的材料提供依据。",
+    "context": "# FIG. 4. Multi-objective screening: specific modulus versus thermal neutron abs",
+    "downloaded": true,
+    "local_path": "images/img_004.png",
+    "error": ""
+  },
+  {
+    "index": 5,
+    "page": 4,
+    "asset_link": "/assets/47b841032f6a4cbfa357e8f83e2ccf49",
+    "asset_id": "47b841032f6a4cbfa357e8f83e2ccf49",
+    "title": "ALIGNN与JARVIS-DFT模型计算的体积模量(Kv)和剪切模量(Gv)预测值对比散点图",
+    "desc": "图像包含两个并排的科学图表，分别标记为a和b。",
+    "context": "# FIG. 5. ALIGNN predictions versus JARVIS-DFT values for (a) $K_V$ and (b) $G_V",
+    "downloaded": true,
+    "local_path": "images/img_005.png",
+    "error": ""
+  },
+  {
+    "index": 6,
+    "page": 4,
+    "asset_link": "/assets/44ff64509e964f2aa772d2cef2875c12",
+    "asset_id": "44ff64509e964f2aa772d2cef2875c12",
+    "title": "分层复合材料结构示意图：用于宇宙射线屏蔽与有效载荷保护",
+    "desc": "该图是一个垂直堆叠的层状结构示意图。从上到下依次为：1. 顶层为黑色区域，标注为“Graphene / Graphite”，功能是“Impact absorption”（冲击吸收），并列出了材料参数“K_V/ρ = 124 GPa cm³ g⁻¹”和“E_coh = 7.4 eV/atom”。该层右侧标注厚度为“50 μm”。2. 第二层为浅灰色区域，标注为“h-BN”，功能是“Neutron absorber”（中子吸收剂），参数为“σ_a(B-10) = 3.840 barns”和“K_V = 245 GPa”，厚度标注为“2 mm”。3. 第三层为浅蓝色区域，标注为“HDPE”，功能是“Cosmic-ray moderator”（宇宙射线调节器），描述为“High H content | proton thermalization”，厚度标注为“5 mm”。4. 底层为灰色区域，标注为“Al”，功能是“Structural support”（结构支撑），参数为“K_V = 70 GPa”和“ρ = 2.7 g cm⁻³”，厚度标注为“1 mm”。顶部有红色箭头从“Interstellar medium (dust + cosmic rays)”指向第一层。底部有蓝色箭头从最后一层指向下方的“Payload”。右侧有两个文本框：上方橙色框为“Total”，内容是“~ 8 mm”和“~ 4.5 t”；下方白色框为“Daedalus”，内容是“9 mm Be”和“~ 8.5 t”。结合其具体内容和上下文功能，这张图片向读者直接传达的核心信息是：该文档提出了一种创新的分层复合防护结构，通过从上至下依次使用石墨烯/石墨（吸能）、氮化硼（中子吸收）、高密度聚乙烯（宇宙射线慢化）和铝（结构支撑）四层材料，旨在以约8mm总厚度和4.5吨总重量，为有效载荷提供比传统单层铍防护（9mm, 8.5t）更高效、更轻便的宇宙射线与微陨石综合防护方案。",
+    "context": "# FIG. 6. Proposed layered heterostructure shield concept. Each layer is optimiz",
+    "downloaded": true,
+    "local_path": "images/img_006.png",
+    "error": ""
+  }
+]
