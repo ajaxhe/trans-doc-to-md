@@ -1,0 +1,17 @@
+# 文档处理产物（含论文作者邮箱、乐享 tenant id、翻译稿等个人/隐私数据）
+out/
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+
+# 系统文件
+.DS_Store
+
+# 公式临时目录
+.lexiang-formulas/
+
+# 凭证与个人配置（绝不入库）
+credentials.json
+profiles/
+*.credentials
