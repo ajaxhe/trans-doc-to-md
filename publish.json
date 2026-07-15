@@ -1,0 +1,15 @@
+{
+  "skill_name": "trans-doc-to-md",
+  "display_name": "Trans Doc to Markdown",
+  "version": "3.0.1",
+  "github_repo": "ajaxhe/trans-doc-to-md",
+  "category": "productivity",
+  "tags": ["pdf", "markdown", "lexiang", "translation", "knowledge-base", "bilingual"],
+  "clawscan_note": "Converts PDF / Lexiang links / Markdown packages into faithful bilingual Markdown work packages. Reads only the GEMINI_API_KEY env var for optional translation; no credentials are written or bundled.",
+  "platforms": {
+    "clawhub": {"enabled": true},
+    "agentskillhub": {"enabled": true},
+    "skillshubai": {"enabled": true},
+    "agentskillshub": {"enabled": false}
+  }
+}
