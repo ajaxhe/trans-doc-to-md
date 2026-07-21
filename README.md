@@ -142,8 +142,14 @@ python3 scripts/pdf_extract.py out/my-doc/paper.pdf --thumbs --out-dir out/my-do
 
 - **英文原文完整保留**，后接中文译文；不摘要、不改写英文侧。
 - **标题单行双语**：`## English Title / 中文标题`（禁止中文另起一行）。
+- **发布标题语义双语**：`meta.json.display_title` 使用
+  `Original Title / 中文标题`；最终正文删除重复的文档级 H1。
 - **列表逐项单行双语**：`- English item / 中文条目`；禁止先列全部英文再列全部中文。
+- **表格逐单元格双语**：Markdown/HTML 表格使用 `English<br>中文`，禁止英文行和
+  中文行分开。
 - **正文按句末标点判断**：有明确句末标点 → 英文一段、中文一段；无句末标点（标签 / 指标 / 短语）→ 同一行 `English / 中文`。
+- **后处理不得丢译文**：清洗与格式修复以完整双语稿为输入；匹配失败必须终止，禁止从
+  `source.md` 重拼后静默保留英文。
 - **术语全局统一**：先建术语表，整篇沿用同一译法。
 - 本地图片 path 原样保留且顺序不变，alt 可翻译。
 - 图片块只输出图片引用，不输出 `[IMAGE]` 元数据、`<image_ocr>`、OCR 译文或衍生表格。
@@ -175,7 +181,8 @@ python3 scripts/bilingual_validate.py source.md "<原文标题>.md" \
   --section "Mechanical Properties" --profile generic
 ```
 
-- `generic` 始终校验源文段落与本地图片路径 / 顺序；仅当源文存在 TOC 时运行 TOC 专项校验。
+- `generic` 始终校验源文段落、中文译文覆盖率与本地图片路径 / 顺序；中文覆盖率低于
+  80% 直接失败。仅当源文存在 TOC 时运行 TOC 专项校验。
 - `pdf-rich` 继续运行严格 TOC 和标题结构校验。
 - 成功 / 失败退出码分别为 `0` / `1`；`--json` 始终输出含 `status/ok/profile/scope/error` 的 JSON。
 
@@ -195,7 +202,7 @@ python3 "<uploader-root>/scripts/lexiang_upload.py" --version   # cli_api 必须
 python3 "<uploader-root>/scripts/lexiang_upload.py" upload \
   --work-dir "out/my-doc" --md "<原文标题>.md" \
   --meta-file meta.json --parent-from-meta --source-from-meta \
-  --name-suffix " 中英对照" --pin --json
+  --name "<meta.display_title>" --pin --json
 ```
 
 预览而不上传：
@@ -235,6 +242,8 @@ python3 "<uploader-root>/scripts/lexiang_upload.py" upload \
 - [ ] `source.md` 未被修改，是最终校验的唯一原文基准。
 - [ ] `meta.json` 标准字段齐全，最终文件使用原文标题命名。
 - [ ] 所有源文段落完整保留，没有摘要替代。
+- [ ] 中文译文覆盖率通过；最终稿相对翻译原始输出没有异常丢失中文段落。
+- [ ] 表格表头和正文自然语言单元格均为中英同格，翻译没有让数据行数翻倍。
 - [ ] 所有源文本地图片路径不变、顺序不变、文件存在。
 - [ ] 图片块仅保留图片引用，无图片元数据、OCR 文本、OCR 译文或衍生内容。
 - [ ] 全文无非必要的 `\$`；普通金额统一使用 `$`。

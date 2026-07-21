@@ -20,6 +20,7 @@ MARKDOWN_IMAGE_RE = re.compile(
     r"!\[[^\]]*\]\(\s*(?:<([^>]+)>|([^\s)]+))(?:\s+[^)]*)?\s*\)"
 )
 TOKEN_RE = re.compile(r"[a-z]+(?:['’][a-z]+)*|\d+(?:\.\d+)?", re.IGNORECASE)
+CJK_RE = re.compile(r"[\u3400-\u9fff]")
 CONTENTS_RE = re.compile(r"^(?:contents|table of contents)(?:\s*/\s*(?:目录|目次))?$", re.IGNORECASE)
 TOC_ITEM_RE = re.compile(
     r"^\s*-\s+(?:\*\*[^*]+\*\*\s*:\s+\S.+|\*\*[^*]+\*\*)\s+·\s+p\.\d+\s*$",
@@ -97,6 +98,17 @@ def _normalize(text: str) -> str:
     text = re.sub(r"\$\^\{?\d+\}?\$", " ", text)
     text = re.sub(r"\[\d+(?:[-,]\d+)*\]", " ", text)
     return " ".join(TOKEN_RE.findall(text.casefold()))
+
+
+def _tokens_in_order(needles: list[str], haystack: list[str]) -> bool:
+    """Return whether source tokens survive in order among translation tokens."""
+    index = 0
+    for token in haystack:
+        if token == needles[index]:
+            index += 1
+            if index == len(needles):
+                return True
+    return False
 
 
 def _contents_lines(markdown: str) -> list[str]:
@@ -227,16 +239,30 @@ def validate_bilingual_source(
     """Require every meaningful source paragraph in the bilingual output."""
     source_scope = _select_section(source, section)
     target_paragraphs = [_normalize(block) for block in _paragraphs(bilingual)]
-    target_document = "\n".join(target_paragraphs)
+    # Translation may split one source paragraph into several sentence-level
+    # bilingual paragraphs. Join with spaces so the unchanged English remains
+    # comparable across those formatting boundaries.
+    target_document = " ".join(paragraph for paragraph in target_paragraphs if paragraph)
+    target_tokens = target_document.split()
     missing = []
     checked = 0
+    source_units = []
     for block in _paragraphs(source_scope):
+        lines = [line.strip() for line in block.splitlines() if line.strip()]
+        if lines and all(line.startswith("|") and line.endswith("|") for line in lines):
+            for line in lines:
+                source_units.extend(cell.strip() for cell in line.strip("|").split("|"))
+        else:
+            source_units.append(block)
+    for block in source_units:
         normalized = _normalize(block)
         tokens = normalized.split()
         if len(tokens) < 5:
             continue
         checked += 1
         if normalized in target_document:
+            continue
+        if _tokens_in_order(tokens, target_tokens):
             continue
         best_ratio = max(
             (SequenceMatcher(None, normalized, candidate).ratio() for candidate in target_paragraphs),
@@ -252,6 +278,111 @@ def validate_bilingual_source(
         raise ValidationError(f"双语文档疑似缺少 {len(missing)} 个源文段落：{preview}{suffix}")
 
 
+def _without_fenced_code(markdown: str) -> str:
+    """Remove fenced code because code is preserved, not translated."""
+    return re.sub(r"(?ms)^```[^\n]*\n.*?^```\s*$", "", markdown)
+
+
+def _translation_units(markdown: str, *, source: bool) -> list[str]:
+    """Return prose/list/table units relevant to translation coverage."""
+    units = []
+    for block in _paragraphs(_without_fenced_code(markdown)):
+        lines = [line.strip() for line in block.splitlines() if line.strip()]
+        if not lines:
+            continue
+        candidates = []
+        if all(LIST_ITEM_RE.match(line) for line in lines):
+            candidates.extend(LIST_ITEM_RE.match(line).group(1) for line in lines)
+        elif all(line.startswith("|") and line.endswith("|") for line in lines):
+            candidates.extend(line for line in lines if not re.fullmatch(r"[|:\-\s]+", line))
+        else:
+            candidates.append(block)
+        for candidate in candidates:
+            visible = re.sub(r"!\[[^\]]*\]\([^)]+\)", "", candidate)
+            visible = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", visible)
+            visible = re.sub(r"<[^>]+>", " ", visible)
+            if source:
+                if len(TOKEN_RE.findall(visible)) >= 5:
+                    units.append(visible)
+            elif CJK_RE.search(visible):
+                units.append(visible)
+    return units
+
+
+def validate_translation_coverage(
+    source: str,
+    bilingual: str,
+    *,
+    section: str | None = None,
+    minimum_ratio: float = 0.8,
+) -> None:
+    """Reject outputs that preserve English but lose most Chinese translations.
+
+    This is intentionally a coverage gate, not a translation-quality judge. It
+    catches destructive post-processing where source paragraphs remain intact
+    but translated blocks are discarded.
+    """
+    source_scope = _select_section(source, section)
+    source_units = _translation_units(source_scope, source=True)
+    if not source_units:
+        return
+    translated_units = _translation_units(bilingual, source=False)
+    ratio = min(1.0, len(translated_units) / len(source_units))
+    if ratio < minimum_ratio:
+        raise ValidationError(
+            "中文译文覆盖率不足："
+            f"{len(translated_units)}/{len(source_units)}={ratio:.0%}，"
+            f"要求至少 {minimum_ratio:.0%}；"
+            "疑似翻译后处理丢弃了中文段落"
+        )
+
+
+def _table_cell_visible_text(cell: str) -> str:
+    text = re.sub(r"`[^`]*`", "", cell)
+    text = re.sub(r"!\[[^\]]*\]\([^)]+\)", "", text)
+    text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
+    text = re.sub(r"https?://\S+", "", text)
+    text = re.sub(r"<[^>]+>", " ", text)
+    return re.sub(r"[*_~]", "", text).strip()
+
+
+def validate_bilingual_table_cells_paired(markdown: str) -> None:
+    """Require English and Chinese to share each natural-language table cell."""
+    problems = []
+    in_fence = False
+    for number, line in enumerate(markdown.splitlines(), start=1):
+        if line.lstrip().startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        stripped = line.strip()
+        if not (stripped.startswith("|") and stripped.endswith("|")):
+            continue
+        if re.fullmatch(r"[|:\-\s]+", stripped):
+            continue
+        cells = re.split(r"(?<!\\)\|", stripped.strip("|"))
+        for column, cell in enumerate(cells, start=1):
+            visible = _table_cell_visible_text(cell)
+            has_latin = bool(re.search(r"[A-Za-z]{2,}", visible))
+            has_cjk = bool(CJK_RE.search(visible))
+            if has_latin and not has_cjk:
+                problems.append(f"L{number}C{column}: {visible[:80]}")
+    for match in re.finditer(r"(?is)<(td|th)\b[^>]*>(.*?)</\1>", markdown):
+        visible = _table_cell_visible_text(match.group(2))
+        has_latin = bool(re.search(r"[A-Za-z]{2,}", visible))
+        has_cjk = bool(CJK_RE.search(visible))
+        if has_latin and not has_cjk:
+            line = markdown.count("\n", 0, match.start()) + 1
+            problems.append(f"L{line}: {visible[:80]}")
+    if problems:
+        raise ValidationError(
+            "双语表格必须在同一单元格内写成「English<br>中文」，"
+            "禁止英文行与中文行分开："
+            + "；".join(problems[:5])
+        )
+
+
 def validate_document(
     source: str,
     bilingual: str,
@@ -265,11 +396,13 @@ def validate_document(
         raise ValidationError(f"不支持的校验 profile：{profile}")
 
     validate_bilingual_source(source, bilingual, section=section)
+    validate_translation_coverage(source, bilingual, section=section)
     validate_local_images_preserved(source, bilingual)
     validate_no_image_metadata_or_escaped_dollars(bilingual)
     validate_no_unsafe_tildes(bilingual)
     validate_attributed_quotes_are_blockquoted(bilingual)
     validate_bilingual_list_items_paired(bilingual)
+    validate_bilingual_table_cells_paired(bilingual)
 
     source_has_toc = has_toc(source)
     if profile == "pdf-rich":

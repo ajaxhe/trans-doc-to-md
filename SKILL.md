@@ -1,6 +1,6 @@
 ---
 name: trans-doc-to-md
-version: "3.0.1"
+version: "3.1.2"
 description: >-
   Convert PDFs, Lexiang document links, or prepared Markdown packages into faithful
   bilingual Markdown work packages. Preserves source paragraphs, local image paths
@@ -51,6 +51,7 @@ requires:
 ```json
 {
   "title": "Original Document Title",
+  "display_title": "Original Document Title / 中文标题",
   "source_url": "https://example.com/original",
   "source_title": "Original Document Title",
   "source_type": "pdf",
@@ -60,6 +61,8 @@ requires:
 ```
 
 - `title`：最终 Markdown 文件名和默认发布标题的原文标题。
+- `display_title`：可选的发布展示标题。非中文双语文档必须使用
+  `Original Title / 中文标题` 单行格式；中文文档可与 `title` 相同。
 - `source_url`：原始来源 URL；纯本地文件可用 `file://` URL 或空字符串。
 - `source_title`：来源显示标题，通常与 `title` 相同。
 - `source_type`：保留真实来源类型，支持 `article`、`youtube`、`podcast`、`pdf`、
@@ -159,6 +162,8 @@ python3 scripts/pdf_extract.py out/my-doc/paper.pdf --thumbs --out-dir out/my-do
 - 表示“约”的裸 `~` 改为 `≈`；代码、行内代码和 URL 不改。
 - 普通货币金额直接写 `$`，不得转义成 `\$`；只有真实数学公式才按公式策略处理。
 - 标题使用单行双语格式；普通文章不要求 Contents/TOC。
+- 文档级标题用于 `meta.json.display_title` 和在线页面名称，不保留在最终 Markdown
+  正文中；章节标题继续保留。
 
 翻译格式见 [references/translation.md](references/translation.md)。
 
@@ -188,8 +193,15 @@ python3 scripts/translate_gemini.py draft.md "<原文标题>.md"
 硬性要求：
 
 - 英文原文完整保留，后接中文译文。
+- 翻译后的清洗、重排和格式修复必须以完整双语稿为输入，禁止从 `source.md` 重新拼装并在
+  匹配失败时只保留英文。任何启发式合并若无法确认译文归属，必须失败退出，不得静默降级。
 - 标题单行双语：`## English / 中文`。
+- 将原文文档标题翻译为 `Original Title / 中文标题`，写入
+  `meta.json.display_title`；最终 Markdown 删除与该展示标题对应的首个文档级 H1，
+  避免在线页面名称与正文第一行重复。
 - 列表逐项单行双语：`- English item / 中文条目`；不受句末标点影响，禁止英文列表与中文列表分组堆叠。
+- Markdown/HTML 表格逐单元格双语：`English<br>中文`。表头和正文单元格都必须同格，
+  禁止先放一行英文、再另起一行中文；纯数字、百分比和代码标识可不翻译。
 - 本地图片 path 原样保留且顺序不变，alt 可翻译。
 - 图片块只输出图片引用，不输出 `[IMAGE]` 元数据、`<image_ocr>`、OCR 译文或衍生表格。
 - 非公式场景中的美元符号写为 `$`，禁止写成 `\$`。
@@ -219,9 +231,10 @@ python3 scripts/bilingual_validate.py source.md "<原文标题>.md" \
   --section "Mechanical Properties" --profile generic
 ```
 
-`generic` 始终校验源文段落与本地图片路径/顺序；仅当源文存在 TOC 时运行 TOC
-专项校验。`pdf-rich` 继续运行严格 TOC 和标题结构校验。成功/失败退出码分别为 0/1；
-`--json` 始终输出含 `status/ok/profile/scope/error` 的 JSON。
+`generic` 始终校验源文段落、中文译文覆盖率和本地图片路径/顺序；中文覆盖率低于
+80% 直接失败，防止“英文完整但译文被后处理丢弃”的假通过。仅当源文存在 TOC 时运行
+TOC 专项校验。`pdf-rich` 继续运行严格 TOC 和标题结构校验。成功/失败退出码分别为
+0/1；`--json` 始终输出含 `status/ok/profile/scope/error` 的 JSON。
 
 ## Step 7 — 可选发布（只调用公共 uploader）
 
@@ -238,7 +251,7 @@ python3 "<uploader-root>/scripts/lexiang_upload.py" --version
 python3 "<uploader-root>/scripts/lexiang_upload.py" upload \
   --work-dir "out/my-doc" --md "<原文标题>.md" \
   --meta-file meta.json --parent-from-meta --source-from-meta \
-  --name-suffix " 中英对照" --pin --json
+  --name "<meta.display_title>" --pin --json
 ```
 
 预览而不上传：
@@ -256,7 +269,14 @@ python3 "<uploader-root>/scripts/lexiang_upload.py" upload \
 
 - `source.md` 未被修改，是最终校验的唯一原文基准。
 - `meta.json` 标准字段齐全，最终文件使用原文标题命名。
+- 非中文文档的 `meta.json.display_title` 为 `Original Title / 中文标题`，发布时
+  不使用“中英对照”等机械后缀。
+- 最终 Markdown 正文不含与 `display_title` 重复的文档级 H1；第一个标题应是正文
+  章节标题，或正文直接从副标题/元信息开始。
 - 所有源文段落完整保留，没有摘要替代。
+- 中文译文覆盖率校验通过；不得只凭英文原文完整和 uploader `verified=true` 判定双语完整。
+- 最终稿相对翻译原始输出的中文段落数不得异常下降；格式后处理必须保留全部译文。
+- 所有自然语言表格单元格同时包含英文与中文，译文没有被拆到下一行或另一张表。
 - 所有源文本地图片路径不变、顺序不变、文件存在。
 - 图片块仅保留图片引用，无图片元数据、OCR 文本、OCR 译文或衍生内容。
 - 全文无非必要的 `\$`；普通金额统一使用 `$`。

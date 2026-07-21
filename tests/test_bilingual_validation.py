@@ -14,10 +14,12 @@ from bilingual_validation_core import (  # noqa: E402
     validate_attributed_quotes_are_blockquoted,
     validate_bilingual_source,
     validate_bilingual_list_items_paired,
+    validate_bilingual_table_cells_paired,
     validate_document,
     validate_local_images_preserved,
     validate_markdown_structure,
     validate_no_unsafe_tildes,
+    validate_translation_coverage,
     validate_toc_categories_attested,
     validate_toc_titles_preserved,
 )
@@ -58,6 +60,40 @@ class BilingualValidationTests(unittest.TestCase):
         )
         with self.assertRaises(ValidationError):
             validate_bilingual_source(source, bilingual)
+
+    def test_rejects_preserved_english_with_most_translations_dropped(self) -> None:
+        source = "\n\n".join(
+            f"Source paragraph {number} contains enough English words for validation."
+            for number in range(1, 6)
+        )
+        bilingual = source + "\n\n只有一个中文段落被后处理保留下来。"
+        with self.assertRaisesRegex(ValidationError, "中文译文覆盖率不足"):
+            validate_translation_coverage(source, bilingual)
+
+    def test_accepts_separate_english_and_chinese_paragraph_pairs(self) -> None:
+        source = (
+            "The first source paragraph contains enough words for validation.\n\n"
+            "The second source paragraph also contains enough words for validation."
+        )
+        bilingual = (
+            "The first source paragraph contains enough words for validation.\n\n"
+            "第一段中文译文完整保留。\n\n"
+            "The second source paragraph also contains enough words for validation.\n\n"
+            "第二段中文译文完整保留。"
+        )
+        validate_translation_coverage(source, bilingual)
+
+    def test_translation_coverage_ignores_fenced_code(self) -> None:
+        source = (
+            "A source paragraph contains enough words for translation coverage.\n\n"
+            "```python\nprint('This code stays in English')\n```"
+        )
+        bilingual = (
+            "A source paragraph contains enough words for translation coverage.\n\n"
+            "这段源文有完整的中文翻译。\n\n"
+            "```python\nprint('This code stays in English')\n```"
+        )
+        validate_translation_coverage(source, bilingual)
 
     def test_rejects_missing_local_image(self) -> None:
         source = (
@@ -265,6 +301,29 @@ class BilingualValidationTests(unittest.TestCase):
         )
         with self.assertRaises(ValidationError):
             validate_bilingual_list_items_paired(markdown)
+
+    def test_accepts_bilingual_text_in_each_markdown_table_cell(self) -> None:
+        validate_bilingual_table_cells_paired(
+            "| Instead of saying…<br>不要这样说…… | Say…<br>可以这样说…… |\n"
+            "| --- | --- |\n"
+            "| Use RAG<br>使用 RAG | Add context<br>补充上下文 |"
+        )
+
+    def test_rejects_stacked_english_and_chinese_table_rows(self) -> None:
+        markdown = (
+            "| Instead of saying… | Say… |\n"
+            "| --- | --- |\n"
+            "| Use RAG | Add context |\n"
+            "| 使用 RAG | 补充上下文 |"
+        )
+        with self.assertRaisesRegex(ValidationError, "同一单元格"):
+            validate_bilingual_table_cells_paired(markdown)
+
+    def test_accepts_bilingual_text_in_each_html_table_cell(self) -> None:
+        validate_bilingual_table_cells_paired(
+            "<table><tr><th>Metric<br>指标</th></tr>"
+            "<tr><td>Accuracy<br>准确率</td></tr></table>"
+        )
 
     def test_cli_json_is_stable_on_success_and_failure(self) -> None:
         script = SCRIPTS / "bilingual_validate.py"
