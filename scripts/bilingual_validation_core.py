@@ -67,6 +67,18 @@ def _select_section(markdown: str, section: str | None) -> str:
     return "\n".join(lines[start:end])
 
 
+def _without_trailing_subscription_chrome(markdown: str) -> str:
+    """Remove a recognized trailing newsletter widget from source validation."""
+    match = re.search(
+        r"(?ms)^##\s+Stay Connected\s*$"
+        r"(?=.*?\bconsider subscribing\b)"
+        r".*\Z",
+        markdown,
+        flags=re.IGNORECASE,
+    )
+    return markdown[: match.start()].rstrip() if match else markdown
+
+
 def _paragraphs(markdown: str) -> list[str]:
     markdown = re.sub(
         r"(?ms)^\[IMAGE\]\s*$.*?^\[/IMAGE\]\s*$",
@@ -92,6 +104,7 @@ def _paragraphs(markdown: str) -> list[str]:
 
 def _normalize(text: str) -> str:
     text = unicodedata.normalize("NFKC", text)
+    text = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", text)
     text = re.sub(r"!\[([^\]]*)\]\([^)]+\)", r"\1", text)
     text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
     text = re.sub(r"<[^>]+>", " ", text)
@@ -395,8 +408,9 @@ def validate_document(
     if profile not in {"generic", "pdf-rich"}:
         raise ValidationError(f"不支持的校验 profile：{profile}")
 
-    validate_bilingual_source(source, bilingual, section=section)
-    validate_translation_coverage(source, bilingual, section=section)
+    validation_source = _without_trailing_subscription_chrome(source)
+    validate_bilingual_source(validation_source, bilingual, section=section)
+    validate_translation_coverage(validation_source, bilingual, section=section)
     validate_local_images_preserved(source, bilingual)
     validate_no_image_metadata_or_escaped_dollars(bilingual)
     validate_no_unsafe_tildes(bilingual)
@@ -531,8 +545,14 @@ def validate_attributed_quotes_are_blockquoted(markdown: str) -> None:
     """Require explicit quote-plus-attribution groups to use standard blockquotes."""
     lines = markdown.splitlines()
     problems = []
+    in_fence = False
     for index, line in enumerate(lines):
         stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
         if not stripped.startswith(("“", '"')) or stripped.startswith(">"):
             continue
         following = [item.strip() for item in lines[index + 1 : index + 9] if item.strip()]
