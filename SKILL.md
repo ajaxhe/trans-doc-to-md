@@ -296,6 +296,7 @@ python3 "<uploader-root>/scripts/lexiang_upload.py" upload \
   坐标伪引用（矢量图漏解析的信号）。
 - 图片块仅保留图片引用，无图片元数据、OCR 文本、OCR 译文或衍生内容。
 - 全文无非必要的 `\$`；普通金额统一使用 `$`。
+- 含 CJK 的行内不出现 `*` 强调标记（中文侧不加强调，英文侧保留）；上传后线上 clean 文本需复查（M30）。
 - `generic` 对无 TOC 普通文章可通过；有 TOC 时标题保持完整。
 - `pdf-rich` 已完成图表、富元素、TOC 和标题层级专项检查。
 - 校验命令退出码为 0；JSON 中 `ok=true`。
